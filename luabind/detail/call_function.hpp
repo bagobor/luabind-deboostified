@@ -75,12 +75,16 @@ namespace luabind
 			
 			push_arguments<PolicyList, 1>(L, std::forward<Args>(args)...);
 
+			bool error = false;
 			if (fn(L, sizeof...(Args), 1)) {
 				assert(lua_gettop(L) == top - m_params + 1);
 				call_error(L);
+				error = true;
 			}
 			// pops the return values from the function call
 			stack_pop pop(L, lua_gettop(L) - top + m_params);
+
+			if (error) return Ret{};
 
 			specialized_converter_policy_n<0, PolicyList, Ret, lua_to_cpp> converter;
 			if (converter.match(L, decorated_type<Ret>(), -1) < 0) {
@@ -103,8 +107,8 @@ namespace luabind
 				push_arguments<PolicyList, 1>(L, std::forward<Args>(args)...);
 
 				if(Function(L, sizeof...(Args), 0)) {
-					assert(lua_gettop(L)==top-NumParams+1);
 					call_error(L);
+					assert(lua_gettop(L)==top-NumParams+1);					
 				}
 				// pops the return values from the function call
 				stack_pop pop(L, lua_gettop(L)-top+NumParams);
@@ -119,14 +123,15 @@ namespace luabind
 				int top = lua_gettop(L);
 				
 				push_arguments<PolicyList, 1>(L, std::forward<Args>(args)...);
-
+				bool error = false;
 				if(Function(L, sizeof...(Args), 1)) {
 					assert(lua_gettop(L)==top-NumParams+1);
 					call_error(L);
+					error = true;
 				}
 				// pops the return values from the function call
 				stack_pop pop(L, lua_gettop(L)-top+NumParams);
-
+				if (error) return Ret{};
 				specialized_converter_policy_n<0, PolicyList, Ret, lua_to_cpp> converter;
 				if(converter.match(L, decorated_type<Ret>(), -1)<0) {
 					cast_error<Ret>(L);

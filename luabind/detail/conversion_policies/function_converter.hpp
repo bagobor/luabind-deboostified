@@ -28,6 +28,8 @@ namespace luabind {
 			return call_function<R>(m_func, std::forward<Args>(args)...);
 		}
 
+		bool is_valid() const { return m_func.is_valid(); }
+
 	private:
 		object m_func;
 	};

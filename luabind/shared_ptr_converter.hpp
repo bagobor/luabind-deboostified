@@ -10,6 +10,7 @@
 #include <luabind/get_main_thread.hpp>  // for get_main_thread
 #include <luabind/handle.hpp>           // for handle
 #include <luabind/detail/decorate_type.hpp>  // for decorated_type
+#include <luabind/detail/primitives.hpp>  // for decorated_type
 #include <memory>
 
 namespace luabind {
@@ -59,6 +60,11 @@ namespace luabind {
 
 		void to_lua(lua_State* L, std::shared_ptr<T> const& p)
 		{
+			if (!p) {
+				//detail::value_converter().to_lua(L, null_type());
+				return;
+			}
+
 			if (detail::shared_ptr_deleter* d =
 					std::get_deleter<detail::shared_ptr_deleter>(p))
 			{

@@ -24,6 +24,7 @@
 #define LUABIND_OBJECT_050419_HPP
 
 #include <tuple>
+#include <string>
 
 #include <luabind/nil.hpp>
 #include <luabind/handle.hpp>
